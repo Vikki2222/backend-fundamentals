@@ -7,6 +7,7 @@ router.get("/", function (req, res) {
 });
 
 router.post("/register", async (req, res) => {
+    
     try {
         let { fullname, email, password } = req.body;
 
