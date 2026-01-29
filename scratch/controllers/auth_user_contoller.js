@@ -4,13 +4,13 @@ const{generateTokens} = require('../utils/generate_tokens')
 const { protectedroute } = require('../middlewares/auth.middlwware');
 
 
+
 const sign_up = async (req, res) => {
     try {
-        let { username, email, password } = req.body;
+        let {fullname, email, password } = req.body;
         const ifemail = await Usermodel.find({ email: email });
-        if (!ifemail > 0) {
-            req.flash("message", "this email already exists");
-            res.redirect('/');
+        if (ifemail.length > 0) {
+            return res.status(400).json({ message: "This email already exists" });
         }
         const hashedpassword = await hashpassword(password)
         let user = await Usermodel.create({
@@ -21,8 +21,7 @@ const sign_up = async (req, res) => {
 
         const token = await generateTokens(user)
         res.cookie("token",token)
-        req.flash("message" , "Account created, you can login now");
-    res.redirect("/");
+        return res.status(201).json({ message: user });
 
     }
     catch (err) {
