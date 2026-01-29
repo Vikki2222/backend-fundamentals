@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Usermodel = require("../models/user-model")
+const {sign_up} = require('../controllers/auth_user_contoller')
 
 router.get("/", function (req, res) {
     res.send("heyyy idkkk")
@@ -29,6 +30,8 @@ router.post("/register", async (req, res) => {
         return res.send(err.message);
     }
 });
+
+router.post ("/sign_up",sign_up);
 
 
 module.exports = router;
