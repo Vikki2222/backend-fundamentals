@@ -4,7 +4,7 @@ const protectedroute= (req,res,next)=>{
     const token = req.cookies.token;
 
     if(!token){
-        return res.status(401).send("Access denied , no token provided");
+        return res.redirect("/users/sign_in")
     }
 
     try{
@@ -13,7 +13,7 @@ const protectedroute= (req,res,next)=>{
         next();
     }
     catch(err){
-        res.status(401).send("token expired")
+        res.redirect("/users/sign_in")
     }
 }
 

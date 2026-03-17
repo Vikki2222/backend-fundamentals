@@ -1,8 +1,9 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-let index = require(scratch/views/index.ejs)
+const {protectedroute} = require("../middlewares/auth.middlwware")
 
-router.get("/",function (res,req){
-    res.render("index")
-})
+router.get("/", protectedroute, (req, res) => {
+    res.render("index");
+});
+
 module.exports = router;
