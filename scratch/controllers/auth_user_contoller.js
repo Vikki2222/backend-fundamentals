@@ -1,6 +1,6 @@
 const usermodel = require('../models/user-model');
 const { hashpassword, comparepassword } = require('../utils/pass_bcrypt');
-const { generateTokens } = require('../utils/generate_tokens');
+const { generateAccessToken, generateRefreshToken } = require('../utils/generate_tokens');
 
 // --------------------- SIGN UP ---------------------
 const sign_up = async (req, res) => {
@@ -43,19 +43,27 @@ const sign_in = async (req, res) => {
             return res.status(400).json({ message: "Invalid email or password" });
         }
 
-        // Generate JWT token
-        const token = generateTokens(user);
-
-        // Set cookie
-        res.cookie("token", token, {
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+        
+        // Set cookies
+        res.cookie("accessToken", accessToken, {
             httpOnly: true,
-            sameSite: "lax",   // ✅ allows POST -> redirect
-            secure: false,     // ✅ localhost, set true in production
-            maxAge: 24 * 60 * 60 * 1000
+            sameSite: "lax",
+            secure: false, 
+            maxAge: 15 * 60 * 1000 // 15 minutes
         });
+        
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            sameSite: "lax",
+            secure: false, 
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        });
+        
+        res.redirect("/");
 
-        return res.redirect("/"); // protected route
-
+module.exports = { generateAccessToken, generateRefreshToken };
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -66,6 +74,8 @@ const logout = (req, res) => {
     res.clearCookie("token");
     return res.redirect("/users/sign_in");
 };
+
+
 
 module.exports = {
     sign_up,
